@@ -8,7 +8,7 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from decimal import Decimal
 """dinâmica"""
 def dinamico(lista, TAM, soma):
 
@@ -117,8 +117,8 @@ def executar():
 def gerar_csv():
     
     max_execucao = 12
-    soma = 6
-    tam_array = 5
+    soma = 5
+    tam_array = 2
     tam_array_iteracao = []
     
     tempos_recursivo = []
@@ -136,20 +136,20 @@ def gerar_csv():
         temp_ini = time.time()
         dinamico(vetor, tam_array, soma)
         temp_fim = time.time()
-        tempos_dinamico.append(temp_fim - temp_ini)
+        tempos_dinamico.append(Decimal(str(temp_fim - temp_ini)))
         
         print("RECURSIVO")
         temp_ini = time.time()
         recursivo(vetor, tam_array, soma)
         temp_fim = time.time()
-        tempos_recursivo.append(temp_fim - temp_ini)
+        tempos_recursivo.append(Decimal(str(temp_fim - temp_ini)))
         
         
         print("backtracking")
         temp_ini = time.time()
         backtracking(vetor, 0,0, soma)
         temp_fim = time.time()
-        tempos_back.append(temp_fim - temp_ini)
+        tempos_back.append(Decimal(str(temp_fim - temp_ini)))
     
         tam_array_iteracao.append(tam_array)
         
@@ -173,9 +173,17 @@ def gerar_grafico():
     dataframe = pd.read_csv('subsetsum_tempos.csv', sep=';')
     df = pd.DataFrame(dataframe, columns=['metodo','tempo', 'tamanho_array'])
     
+    df_dinamico = df.loc[df['metodo'] == 'dinamico']
+    df_recursivo = df.loc[df['metodo'] == 'recursivo']
+    df_backtracking = df.loc[df['metodo'] == 'backtracking']
+    
     ax = plt.gca()
     
-    df.plot(kind='line', x='tamanho_array', y='tempo', ax=ax, stacked=True)
+    df_dinamico.plot(kind='line', x='tamanho_array', y='tempo',label='dinamico' ,ax=ax,xticks=[0.1], stacked=True)
+    df_recursivo.plot(kind='line', x='tamanho_array', y='tempo', label='recursivo', color='green',  xticks=[0.1], ax=ax, stacked=True)
+    df_backtracking.plot(kind='line', x='tamanho_array', y='tempo',color='red', label='backtracking', ax=ax,xticks=[0.000001], stacked=True)
+    
+    
     plt.title('TAMANHO X EXECUCAO')
     plt.ylabel('Tempo')
     plt.ylabel('Tam. Array')
