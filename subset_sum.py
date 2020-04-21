@@ -3,27 +3,49 @@ Alogoritmos subset sum
 """
 
 import time
+import sys
 import numpy as np
+import os
 
 """dinâmica"""
 def dinamico(lista, TAM, soma):
-
-    matriz = np.ones((TAM, TAM), dtype=np.int32)
     
-    for i in range(TAM):
-        matriz[i][0] = True
+    #criacao da matriz com numpy
+    matriz = np.zeros((TAM + 1 , soma + 1 ), dtype=int)
 
-    for i in range(1, TAM ):
-        matriz[0][i] = False
-
-    for i in range(1, TAM):
-        for j in range(1, TAM):
-            if j < lista[i - 1]:
+    # preenchendo matriz     
+    for i in range(1, TAM + 1):
+        for j in range(1, soma + 1):
+            
+            #verifico se o peso que eu tenho cabe na mochila
+            if lista[i-1] <= j:
+               matriz[i][j] = matriz[i-1][j - lista[i-1]] + (i) #valor do item 
+            else:
                 matriz[i][j] = matriz[i-1][j]
-            if j>= lista[i-1]:
-                matriz[i][j] = (matriz[i - 1][j] or matriz[i-1][j - lista[i-1]])
 
-    print(matriz[TAM][soma])
+    #pegando o conjunto
+    conjunto = []
+    soma_aux =soma
+    while True:        
+        if TAM == -1:
+            break;
+        
+        valor = matriz[TAM][soma]
+                
+        if valor == matriz[TAM - 1][soma]:
+            TAM = TAM - 1
+        else:
+            TAM = TAM - 1
+            conjunto.append(lista[TAM])
+            soma =  soma - lista[TAM]
+    
+
+    if np.sum(conjunto) == soma_aux:              
+        print("CONJUNTO ACHADO: ", conjunto)
+        return True
+    else:
+        return False    
+                         
 
 """recursiva"""
 def recursivo(lista, TAM, soma):
@@ -48,17 +70,21 @@ def backtracking():
 
 
 """EXECUCAO"""
-lista = [3, 34, 4, 12, 5, 2]
-soma = 19
+lista = [3, 34, 6, 12, 5, 2]
+lista.sort()
+soma = int(sys.argv[1])
 TAM = len(lista)
 
 
+print("---------IMPLEMENTACAO DINAMICA------")
+if dinamico(lista, TAM, soma):
+    print("Existe um subconjunto DINAMICO")
+else:
+    print("nao existe um subconjunto!!")
 
-dinamico(lista, TAM, soma)
-
-print("RECURSIVO")
+print("\n----------RECURSIVO----------------")
 if recursivo(lista, TAM, soma) : 
     print("Existe um subconjunto")
 else:
-    print("nao existe nenhum subconjunto para esta soma")
+    print("nao existe um subconjunto!!")
 #backtracking()
